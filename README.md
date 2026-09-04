@@ -5,14 +5,16 @@
 ![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)
 ![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![wakatime](https://wakatime.com/badge/github/edmealem-k/build-redis-go.svg)](https://wakatime.com/badge/github/edmealem-k/build-redis-go)
 
-A ground-up implementation of a fast, in-memory **Redis** server written in Go. Built lesson-by-lesson through test-driven development following the [ShipThatCode](https://shipthatcode.com/courses/build-redis) *Build Redis from Scratch* systems course.
+A ground-up implementation of a fast, in-memory **Redis** server written in Go. Built lesson-by-lesson through test-driven development following the [ShipThatCode](https://shipthatcode.com/courses/build-redis) _Build Redis from Scratch_ systems course.
 
 ---
 
 ## 📌 Overview
 
 This project explores the internal mechanics of Redis by implementing its core subsystems from scratch:
+
 - **RESP (REdis Serialization Protocol)** parser and serializer
 - **In-memory key-value store** with string operations and counters
 - **Key expiration** mechanics (TTL, passive expiration, active eviction)
@@ -33,13 +35,15 @@ This project explores the internal mechanics of Redis by implementing its core s
 <summary><b>Progress Tracker (29 Lessons)</b></summary>
 
 ### 1. Protocol & Basics
-- [ ] **01. Ping** — Initial connection handling and basic `PING` / `PONG` response
+
+- [x] **01. Ping** — Initial connection handling and basic `PING` / `PONG` response
 - [ ] **02. Echo** — Parameter handling and string echoing with `ECHO`
 - [ ] **03. RESP Format** — Bulk strings, simple strings, integers, and arrays
 - [ ] **04. Error Handling** — Redis-compliant error responses (`-ERR ...`)
 - [ ] **05. RESP Array Parsing** — Decoding framed RESP protocol client commands
 
 ### 2. Key-Value Storage & Expiration
+
 - [ ] **06. Set & Get** — Fundamental string key-value storage (`SET`, `GET`)
 - [ ] **07. Multiple Keys** — Multi-key retrieval and batch assignment (`MGET`, `MSET`)
 - [ ] **08. Set NX / XX** — Conditional writes (set if not exists / set if exists)
@@ -49,6 +53,7 @@ This project explores the internal mechanics of Redis by implementing its core s
 - [ ] **12. Passive Expiry** — Lazy expiration on access
 
 ### 3. Rich Data Structures
+
 - [ ] **13. LPUSH & RPUSH** — Double-ended list insertion
 - [ ] **14. LPOP, RPOP & LLEN** — List popping and length inspection
 - [ ] **15. LRANGE** — Slicing and retrieving ranges from list structures
@@ -58,11 +63,13 @@ This project explores the internal mechanics of Redis by implementing its core s
 - [ ] **19. ZADD, ZSCORE & ZRANGE** — Priority/sorted sets with float scores
 
 ### 4. Database Operations & Transactions
+
 - [ ] **20. Generic Keys** — `DEL`, `EXISTS`, `KEYS`, and `TYPE` introspection
 - [ ] **21. Transactions (MULTI & EXEC)** — Atomic command queuing and batch execution
 - [ ] **26. Optimistic Locking (WATCH)** — Check-and-set concurrency control
 
 ### 5. Advanced Systems & Persistence
+
 - [ ] **22. Pub/Sub** — Channel publishing and real-time subscriber fanout
 - [ ] **23. RDB Persistence** — Point-in-time binary snapshot creation and restoration
 - [ ] **24. AOF Logging** — Write-ahead append-only log replay and durability
@@ -94,12 +101,14 @@ This project explores the internal mechanics of Redis by implementing its core s
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - [Go 1.21+](https://go.dev/dl/) installed (`go version`)
 - Git
 
 ### Running Tests Locally
 
 Run the test suite against the current lesson:
+
 ```bash
 # Test a specific lesson (e.g. lesson 01)
 ./run_tests.sh 01
@@ -112,13 +121,16 @@ Run the test suite against the current lesson:
 ```
 
 ### Checking Official Progress
+
 1. Run local tests: `./run_tests.sh <lesson>`
 2. Commit and push:
+
    ```bash
    git add -A
    git commit -m "Complete lesson <XX>"
    git push origin main
    ```
+
 3. Visit the [Course Page](https://shipthatcode.com/courses/build-redis) and click **Check my solution**.
 
 ---
