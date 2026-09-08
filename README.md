@@ -37,7 +37,7 @@ This project explores the internal mechanics of Redis by implementing its core s
 ### 1. Protocol & Basics
 
 - [x] **01. Ping** — Initial connection handling and basic `PING` / `PONG` response
-- [ ] **02. Echo** — Parameter handling and string echoing with `ECHO`
+- [x] **02. Echo** — Parameter handling and string echoing with `ECHO`
 - [ ] **03. RESP Format** — Bulk strings, simple strings, integers, and arrays
 - [ ] **04. Error Handling** — Redis-compliant error responses (`-ERR ...`)
 - [ ] **05. RESP Array Parsing** — Decoding framed RESP protocol client commands

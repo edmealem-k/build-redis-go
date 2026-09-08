@@ -7,6 +7,33 @@ import (
 	"strings"
 )
 
+func cmdPing(args []string) string {
+	// Handle bare "PING" -> Simple String "+PONG\r\n"
+	if len(args) == 1 {
+		return "+PONG\r\n"
+	}
+
+	// Handle "PING <message>" -> Bulk String "$<len>\r\n<message>\r\n"
+	// If additional arguments are provided, Redis echoes the first argument back
+	return encodeBulkString(args[1])
+}
+
+func cmdEcho(args []string) string {
+	if len(args) < 2 {
+		return "-ERR wrong number of arguments for 'echo' command\r\n"
+	}
+
+	msg := strings.Join(args[1:], " ")
+	return encodeBulkString(msg)
+}
+
+type CommandHandler func(args []string) string
+
+var handlers = map[string]CommandHandler{
+	"PING": cmdPing,
+	"ECHO": cmdEcho,
+}
+
 func handleCommand(args []string) string {
 	// Guard against empty command submissions
 	if len(args) == 0 {
@@ -16,20 +43,11 @@ func handleCommand(args []string) string {
 	// Redis command names are case-insensitive
 	cmd := strings.ToUpper(args[0])
 
-	switch cmd {
-	case "PING":
-		// Handle bare "PING" -> Simple String "+PONG\r\n"
-		if len(args) == 1 {
-			return "+PONG\r\n"
-		}
-
-		// Handle "PING <message>" -> Bulk String "$<len>\r\n<message>\r\n"
-		// If additional arguments are provided, Redis echoes the first argument back
-		return encodeBulkString(args[1])
-	default:
-		// unknown command error format following RESP specs
-		return fmt.Sprintf("-ERR unknown command '%s'\r\n", cmd)
+	if handler, exists := handlers[cmd]; exists {
+		return handler(args)
 	}
+
+	return fmt.Sprintf("-ERR unknown command '%s'\r\n", cmd)
 }
 
 // encodeBulkString formats raw string content into a RESP Bulk String:
@@ -60,6 +78,10 @@ func main() {
 
 // parseArgs tokenizes an inline command string while
 // keeping quoted values together.
+// parseArgs("PING bar")
+// In Go, strings are immutable, repeatedly doing `str += string(ch)`
+// creates a brand new string in memory on every single letter.
+// `strings.Builder` is Go's standard way to build a string piece-by-piece in memory.
 func parseArgs(line string) []string {
 	var args []string
 	var current strings.Builder
