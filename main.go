@@ -7,6 +7,51 @@ import (
 	"strings"
 )
 
+func encodeSimpleString(s string) string {
+	return fmt.Sprintf("+%s\r\n", s)
+}
+
+func encodeError(s string) string {
+	return fmt.Sprintf("-%s\r\n", s)
+}
+
+func encodeInteger(i int) string {
+	return fmt.Sprintf(":%d\r\n", i)
+}
+
+// encodeBulkString formats raw string content into a RESP Bulk String:
+func encodeBulkString(s string) string {
+	return fmt.Sprintf("$%d\r\n%s\r\n", len(s), s)
+}
+
+func encodeNull() string {
+	return "$-1\r\n"
+}
+
+type CommandHandler func(args []string) string
+
+var handlers = map[string]CommandHandler{
+	"PING":    cmdPing,
+	"ECHO":    cmdEcho,
+	"COMMAND": cmdCommand,
+}
+
+func handleCommand(args []string) string {
+	// Guard against empty command submissions
+	if len(args) == 0 {
+		return ""
+	}
+
+	// Redis command names are case-insensitive
+	cmd := strings.ToUpper(args[0])
+
+	if handler, exists := handlers[cmd]; exists {
+		return handler(args)
+	}
+
+	return fmt.Sprintf("-ERR unknown command '%s'\r\n", cmd)
+}
+
 func cmdPing(args []string) string {
 	// Handle bare "PING" -> Simple String "+PONG\r\n"
 	if len(args) == 1 {
@@ -27,32 +72,8 @@ func cmdEcho(args []string) string {
 	return encodeBulkString(msg)
 }
 
-type CommandHandler func(args []string) string
-
-var handlers = map[string]CommandHandler{
-	"PING": cmdPing,
-	"ECHO": cmdEcho,
-}
-
-func handleCommand(args []string) string {
-	// Guard against empty command submissions
-	if len(args) == 0 {
-		return ""
-	}
-
-	// Redis command names are case-insensitive
-	cmd := strings.ToUpper(args[0])
-
-	if handler, exists := handlers[cmd]; exists {
-		return handler(args)
-	}
-
-	return fmt.Sprintf("-ERR unknown command '%s'\r\n", cmd)
-}
-
-// encodeBulkString formats raw string content into a RESP Bulk String:
-func encodeBulkString(s string) string {
-	return fmt.Sprintf("$%d\r\n%s\r\n", len(s), s)
+func cmdCommand(args []string) string {
+	return encodeSimpleString("OK")
 }
 
 func main() {
