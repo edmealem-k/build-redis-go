@@ -28,12 +28,51 @@ func encodeNull() string {
 	return "$-1\r\n"
 }
 
-type CommandHandler func(args []string) string
+type (
+	CommandHandler func(args []string) string
+	Arity          struct {
+		min int // minimum arguments (excluding command name)
+		max int // maximum arguments (-1 means unlimited / variadic)
+	}
+	Command struct {
+		handler CommandHandler
+		arity   Arity
+	}
+)
 
-var handlers = map[string]CommandHandler{
-	"PING":    cmdPing,
-	"ECHO":    cmdEcho,
-	"COMMAND": cmdCommand,
+var commands = map[string]Command{
+	"PING":    {handler: cmdPing, arity: Arity{min: 0, max: 1}},
+	"ECHO":    {handler: cmdEcho, arity: Arity{min: 1, max: 1}},
+	"COMMAND": {handler: cmdCommand, arity: Arity{min: 0, max: -1}},
+}
+
+func (a Arity) checkArity(cmd string, args []string) string {
+	if a.min > len(args) {
+		return encodeError(fmt.Sprintf("ERR wrong number of arguments for '%s' command", cmd))
+	}
+
+	if (a.max != -1) && (len(args) > a.max) {
+		return encodeError(fmt.Sprintf("ERR wrong number of arguments for '%s' command", cmd))
+	}
+
+	return ""
+}
+
+func cmdPing(args []string) string {
+	if len(args) == 1 {
+		return encodeSimpleString("PONG")
+	}
+
+	return encodeBulkString(args[1])
+}
+
+func cmdEcho(args []string) string {
+	msg := strings.Join(args[1:], " ")
+	return encodeBulkString(msg)
+}
+
+func cmdCommand(args []string) string {
+	return encodeSimpleString("OK")
 }
 
 func handleCommand(args []string) string {
@@ -45,35 +84,17 @@ func handleCommand(args []string) string {
 	// Redis command names are case-insensitive
 	cmd := strings.ToUpper(args[0])
 
-	if handler, exists := handlers[cmd]; exists {
-		return handler(args)
+	command, exists := commands[cmd]
+
+	if !exists {
+		return encodeError(fmt.Sprintf("ERR unknown command '%s'", cmd))
 	}
 
-	return fmt.Sprintf("-ERR unknown command '%s'\r\n", cmd)
-}
-
-func cmdPing(args []string) string {
-	// Handle bare "PING" -> Simple String "+PONG\r\n"
-	if len(args) == 1 {
-		return "+PONG\r\n"
+	if errmsg := command.arity.checkArity(cmd, args[1:]); errmsg != "" {
+		return errmsg
 	}
 
-	// Handle "PING <message>" -> Bulk String "$<len>\r\n<message>\r\n"
-	// If additional arguments are provided, Redis echoes the first argument back
-	return encodeBulkString(args[1])
-}
-
-func cmdEcho(args []string) string {
-	if len(args) < 2 {
-		return "-ERR wrong number of arguments for 'echo' command\r\n"
-	}
-
-	msg := strings.Join(args[1:], " ")
-	return encodeBulkString(msg)
-}
-
-func cmdCommand(args []string) string {
-	return encodeSimpleString("OK")
+	return command.handler(args)
 }
 
 func main() {
