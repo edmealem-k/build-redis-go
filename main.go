@@ -122,7 +122,7 @@ func main() {
 
 func readCommand(reader *bufio.Reader) ([]string, error) {
 	line, err := reader.ReadString('\n')
-	if err != nil {
+	if err != nil && len(line) == 0 {
 		return nil, err
 	}
 
@@ -139,7 +139,7 @@ func readCommand(reader *bufio.Reader) ([]string, error) {
 		}
 
 		args := make([]string, 0, count)
-		for range count {
+		for i := 0; i < count; i++ {
 			// Read bulk string header (e.g. "$4\r\n")
 			bulkHeader, err := reader.ReadString('\n')
 			if err != nil {
