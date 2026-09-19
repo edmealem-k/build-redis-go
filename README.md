@@ -40,7 +40,7 @@ This project explores the internal mechanics of Redis by implementing its core s
 - [x] **02. Echo** — Parameter handling and string echoing with `ECHO`
 - [x] **03. RESP Format** — Bulk strings, simple strings, integers, and arrays
 - [x] **04. Error Handling** — Redis-compliant error responses (`-ERR ...`)
-- [ ] **05. RESP Array Parsing** — Decoding framed RESP protocol client commands
+- [x] **05. RESP Array Parsing** — Decoding framed RESP protocol client commands
 
 ### 2. Key-Value Storage & Expiration
 
