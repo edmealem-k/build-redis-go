@@ -44,7 +44,7 @@ This project explores the internal mechanics of Redis by implementing its core s
 
 ### 2. Key-Value Storage & Expiration
 
-- [ ] **06. Set & Get** — Fundamental string key-value storage (`SET`, `GET`)
+- [x] **06. Set & Get** — Fundamental string key-value storage (`SET`, `GET`)
 - [ ] **07. Multiple Keys** — Multi-key retrieval and batch assignment (`MGET`, `MSET`)
 - [ ] **08. Set NX / XX** — Conditional writes (set if not exists / set if exists)
 - [ ] **09. Incr & Decr** — Atomic integer increments and decrements

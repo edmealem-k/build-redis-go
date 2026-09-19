@@ -64,12 +64,16 @@ func cmdCommand(args []string) string {
 }
 
 func cmdSet(args []string) string {
-	store[args[1]] = args[2]
+	key, value := args[1], args[2]
+	store[key] = value
+
 	return encodeSimpleString("OK")
 }
 
 func cmdGet(args []string) string {
-	val, exists := store[args[1]]
+	key := args[1]
+
+	val, exists := store[key]
 	if !exists {
 		return encodeNull()
 	}
